@@ -23,27 +23,23 @@ export function useTheme() {
   return useContext(ThemeContext);
 }
 
-// Read the value already applied by the inline <script> in layout.tsx
-// so React state stays in sync with what's already on <html> — no flash.
-function getInitialMode(): ColorMode {
-  if (typeof window === "undefined") return "dark";
-  return (localStorage.getItem("mode") as ColorMode) || "dark";
-}
-
-function getInitialTheme(): ThemeId {
-  if (typeof window === "undefined") return DEFAULT_THEME;
-  return (localStorage.getItem("theme") as ThemeId) || DEFAULT_THEME;
-}
-
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<ThemeId>(getInitialTheme);
-  const [mode, setModeState] = useState<ColorMode>(getInitialMode);
+  // Start with server-safe defaults — the inline <script> in layout.tsx has
+  // already applied the correct data-* attributes to <html> before React
+  // hydrates, so there is no visual flash. We then sync React state in
+  // useEffect (client-only) so the toggle reflects the real saved value.
+  const [theme, setThemeState] = useState<ThemeId>(DEFAULT_THEME);
+  const [mode, setModeState] = useState<ColorMode>("dark");
 
-  // Keep data-* attributes in sync when the provider mounts
   useEffect(() => {
-    document.documentElement.setAttribute("data-mode", mode);
-    document.documentElement.setAttribute("data-theme", theme);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    const storedTheme = (localStorage.getItem("theme") as ThemeId) || DEFAULT_THEME;
+    const storedMode  = (localStorage.getItem("mode")  as ColorMode) || "dark";
+    setThemeState(storedTheme);
+    setModeState(storedMode);
+    // Ensure attributes are set in case script ran before CSS was ready
+    document.documentElement.setAttribute("data-theme", storedTheme);
+    document.documentElement.setAttribute("data-mode",  storedMode);
+  }, []);
 
   const setTheme = (t: ThemeId) => {
     localStorage.setItem("theme", t);

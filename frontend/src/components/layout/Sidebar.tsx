@@ -34,42 +34,47 @@ export function Sidebar() {
           <p className="text-[11px] text-slate-500">Voice AI Suite</p>
         </div>
 
-        {/* ── Pill toggle: Sun ○ Moon ── */}
+        {/* ── Pill toggle — suppressHydrationWarning to avoid class-mismatch
+            between SSR (always dark default) and post-mount state sync ── */}
         <button
           type="button"
           onClick={toggleMode}
           aria-label={isLight ? "Switch to dark mode" : "Switch to light mode"}
           title={isLight ? "Switch to dark mode" : "Switch to light mode"}
+          suppressHydrationWarning
           className={cn(
-            "relative flex h-7 w-[3.25rem] shrink-0 items-center rounded-full p-0.5",
-            "transition-colors duration-300 focus-visible:outline-none",
-            "focus-visible:ring-2 focus-visible:ring-[var(--accent-ring)] focus-visible:ring-offset-1",
+            "relative flex h-7 w-[3.25rem] shrink-0 items-center rounded-full border p-0.5",
+            "transition-colors duration-300",
+            "focus-visible:outline-none focus-visible:ring-2",
+            "focus-visible:ring-[var(--accent-ring)] focus-visible:ring-offset-1",
             "focus-visible:ring-offset-slate-900",
             isLight
-              ? "bg-amber-100 border border-amber-300"
-              : "bg-slate-700 border border-slate-600"
+              ? "border-amber-300 bg-amber-100"
+              : "border-slate-600 bg-slate-700"
           )}
         >
-          {/* Icons row */}
+          {/* Sun — left side */}
           <Sun
+            suppressHydrationWarning
             className={cn(
               "absolute left-1.5 h-3.5 w-3.5 transition-all duration-300",
-              isLight ? "text-amber-500 opacity-100" : "text-slate-500 opacity-50"
+              isLight ? "text-amber-500 opacity-100" : "text-slate-500 opacity-40"
             )}
           />
+          {/* Moon — right side */}
           <Moon
+            suppressHydrationWarning
             className={cn(
               "absolute right-1.5 h-3.5 w-3.5 transition-all duration-300",
-              isLight ? "text-slate-400 opacity-50" : "text-slate-300 opacity-100"
+              isLight ? "text-slate-400 opacity-40" : "text-slate-300 opacity-100"
             )}
           />
           {/* Sliding knob */}
           <span
+            suppressHydrationWarning
             className={cn(
               "relative z-10 h-5 w-5 rounded-full shadow-md transition-all duration-300",
-              isLight
-                ? "translate-x-0 bg-amber-400"
-                : "translate-x-[1.625rem] bg-slate-200"
+              isLight ? "translate-x-0 bg-amber-400" : "translate-x-[1.625rem] bg-slate-200"
             )}
           />
         </button>

@@ -20,23 +20,20 @@ export const viewport: Viewport = {
   themeColor: "#0f172a",
 };
 
-// Inline script runs synchronously before React hydrates — eliminates flash
-const themeScript = `
-(function() {
-  try {
-    var mode  = localStorage.getItem('mode')  || 'dark';
-    var theme = localStorage.getItem('theme') || 'indigo';
-    document.documentElement.setAttribute('data-mode',  mode);
-    document.documentElement.setAttribute('data-theme', theme);
-  } catch(e) {}
-})();
-`;
+// Runs before React hydrates — eliminates flash of wrong theme/mode.
+// Must live inside <head> so the browser executes it synchronously.
+const themeScript = `(function(){try{var m=localStorage.getItem('mode')||'dark';var t=localStorage.getItem('theme')||'indigo';document.documentElement.setAttribute('data-mode',m);document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={inter.variable}>
-      {/* eslint-disable-next-line react/no-danger */}
-      <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+    // suppressHydrationWarning: the inline script sets data-mode/data-theme
+    // before React hydrates, so attributes will differ between SSR and client.
+    // This suppresses that expected mismatch warning on <html> only.
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
+      <head>
+        {/* eslint-disable-next-line react/no-danger */}
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className="flex h-screen overflow-hidden bg-slate-950 font-sans antialiased">
         <ThemeProvider>
           <Sidebar />
