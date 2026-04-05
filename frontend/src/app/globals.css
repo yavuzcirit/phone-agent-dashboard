@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Theme CSS variables ────────────────────────────────── */
+:root,
+[data-theme="indigo"] {
+  --accent:        #818cf8;
+  --accent-hover:  #6366f1;
+  --accent-subtle: rgba(129, 140, 248, 0.12);
+  --accent-ring:   rgba(129, 140, 248, 0.5);
+  --accent-text:   #a5b4fc;
+}
+
+[data-theme="sky"] {
+  --accent:        #38bdf8;
+  --accent-hover:  #0ea5e9;
+  --accent-subtle: rgba(56, 189, 248, 0.12);
+  --accent-ring:   rgba(56, 189, 248, 0.5);
+  --accent-text:   #7dd3fc;
+}
+
+[data-theme="violet"] {
+  --accent:        #a78bfa;
+  --accent-hover:  #8b5cf6;
+  --accent-subtle: rgba(167, 139, 250, 0.12);
+  --accent-ring:   rgba(167, 139, 250, 0.5);
+  --accent-text:   #c4b5fd;
+}
+
+[data-theme="emerald"] {
+  --accent:        #34d399;
+  --accent-hover:  #10b981;
+  --accent-subtle: rgba(52, 211, 153, 0.12);
+  --accent-ring:   rgba(52, 211, 153, 0.5);
+  --accent-text:   #6ee7b7;
+}
+
+/* ── Accent utility classes (theme-aware) ───────────────── */
+.bg-accent          { background-color: var(--accent); }
+.bg-accent-hover:hover { background-color: var(--accent-hover); }
+.bg-accent-subtle   { background-color: var(--accent-subtle); }
+.text-accent        { color: var(--accent); }
+.text-accent-text   { color: var(--accent-text); }
+.border-accent      { border-color: var(--accent); }
+.ring-accent        { --tw-ring-color: var(--accent-ring); }
+.focus-ring-accent:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent-ring);
+}
+
+/* ── Base ────────────────────────────────────────────────── */
+@layer base {
+  :root {
+    --font-inter: "Inter", system-ui, sans-serif;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+  }
+}
+
+/* ── Recharts ────────────────────────────────────────────── */
+@layer utilities {
+  .recharts-default-tooltip {
+    @apply !rounded-xl;
+  }
+}
+
+.recharts-sector:focus,
+.recharts-pie-sector:focus,
+.recharts-bar-rectangle:focus,
+.recharts-surface:focus,
+.recharts-wrapper svg:focus,
+.recharts-wrapper *:focus {
+  outline: none;
+}
