@@ -53,12 +53,12 @@ export function Sidebar() {
               : "border-slate-600 bg-slate-700"
           )}
         >
-          {/* Sun — left side */}
+          {/* Sun — always yellow */}
           <Sun
             suppressHydrationWarning
             className={cn(
               "absolute left-1.5 h-3.5 w-3.5 transition-all duration-300",
-              isLight ? "text-amber-500 opacity-100" : "text-slate-500 opacity-40"
+              isLight ? "text-amber-400 opacity-100" : "text-amber-400 opacity-70"
             )}
           />
           {/* Moon — right side */}
