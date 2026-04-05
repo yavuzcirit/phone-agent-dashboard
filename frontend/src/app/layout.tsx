@@ -20,9 +20,23 @@ export const viewport: Viewport = {
   themeColor: "#0f172a",
 };
 
+// Inline script runs synchronously before React hydrates — eliminates flash
+const themeScript = `
+(function() {
+  try {
+    var mode  = localStorage.getItem('mode')  || 'dark';
+    var theme = localStorage.getItem('theme') || 'indigo';
+    document.documentElement.setAttribute('data-mode',  mode);
+    document.documentElement.setAttribute('data-theme', theme);
+  } catch(e) {}
+})();
+`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={inter.variable}>
+      {/* eslint-disable-next-line react/no-danger */}
+      <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       <body className="flex h-screen overflow-hidden bg-slate-950 font-sans antialiased">
         <ThemeProvider>
           <Sidebar />

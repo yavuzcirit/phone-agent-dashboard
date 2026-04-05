@@ -17,10 +17,12 @@ const NAV_ITEMS = [
 export function Sidebar() {
   const pathname = usePathname();
   const { mode, toggleMode } = useTheme();
+  const isLight = mode === "light";
 
   return (
     <aside className="flex h-screen w-60 shrink-0 flex-col border-r border-slate-700/60 bg-slate-900">
-      <div className="flex h-16 items-center gap-2.5 border-b border-slate-700/60 px-5">
+      {/* ── Header ── */}
+      <div className="flex h-16 items-center gap-2.5 border-b border-slate-700/60 px-4">
         <div
           className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
           style={{ background: "var(--accent)" }}
@@ -32,27 +34,48 @@ export function Sidebar() {
           <p className="text-[11px] text-slate-500">Voice AI Suite</p>
         </div>
 
-        {/* Light / Dark mode toggle */}
+        {/* ── Pill toggle: Sun ○ Moon ── */}
         <button
           type="button"
           onClick={toggleMode}
-          title={mode === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-          aria-label={mode === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+          aria-label={isLight ? "Switch to dark mode" : "Switch to light mode"}
+          title={isLight ? "Switch to dark mode" : "Switch to light mode"}
           className={cn(
-            "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
-            "text-slate-400 hover:text-slate-200 hover:bg-slate-800",
-            "transition-all duration-200",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-ring)]"
+            "relative flex h-7 w-[3.25rem] shrink-0 items-center rounded-full p-0.5",
+            "transition-colors duration-300 focus-visible:outline-none",
+            "focus-visible:ring-2 focus-visible:ring-[var(--accent-ring)] focus-visible:ring-offset-1",
+            "focus-visible:ring-offset-slate-900",
+            isLight
+              ? "bg-amber-100 border border-amber-300"
+              : "bg-slate-700 border border-slate-600"
           )}
         >
-          {mode === "dark" ? (
-            <Sun className="h-[1.1rem] w-[1.1rem] transition-transform duration-300 hover:rotate-12" />
-          ) : (
-            <Moon className="h-[1.1rem] w-[1.1rem] transition-transform duration-300" />
-          )}
+          {/* Icons row */}
+          <Sun
+            className={cn(
+              "absolute left-1.5 h-3.5 w-3.5 transition-all duration-300",
+              isLight ? "text-amber-500 opacity-100" : "text-slate-500 opacity-50"
+            )}
+          />
+          <Moon
+            className={cn(
+              "absolute right-1.5 h-3.5 w-3.5 transition-all duration-300",
+              isLight ? "text-slate-400 opacity-50" : "text-slate-300 opacity-100"
+            )}
+          />
+          {/* Sliding knob */}
+          <span
+            className={cn(
+              "relative z-10 h-5 w-5 rounded-full shadow-md transition-all duration-300",
+              isLight
+                ? "translate-x-0 bg-amber-400"
+                : "translate-x-[1.625rem] bg-slate-200"
+            )}
+          />
         </button>
       </div>
 
+      {/* ── Nav ── */}
       <nav className="flex-1 overflow-y-auto py-4 px-3">
         <ul className="space-y-0.5">
           {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
