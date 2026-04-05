@@ -153,6 +153,44 @@
   --tw-ring-offset-color: #ffffff !important;
 }
 
+/* ── Tables ── */
+/* row dividers */
+[data-mode="light"] .divide-y.divide-slate-700\/40 > * + * {
+  border-color: #e2e8f0 !important;
+}
+[data-mode="light"] .border-b.border-slate-700\/60 {
+  border-color: #e2e8f0 !important;
+}
+/* row hover */
+[data-mode="light"] .hover\:bg-slate-800\/30:hover {
+  background-color: rgba(241,245,249,0.8) !important;
+}
+/* cell text */
+[data-mode="light"] td.text-slate-200,
+[data-mode="light"] td.text-slate-300 { color: #0f172a !important; }
+[data-mode="light"] td.text-slate-400  { color: #334155 !important; }
+[data-mode="light"] td.text-slate-500  { color: #475569 !important; }
+/* header labels */
+[data-mode="light"] th.text-slate-500  { color: #64748b !important; }
+
+/* ── Badge text in light mode (all colour variants) ── */
+/* blue / initiated / in_progress / inbound */
+[data-mode="light"] .text-blue-400    { color: #1d4ed8 !important; }
+[data-mode="light"] .text-indigo-400  { color: #4338ca !important; }
+[data-mode="light"] .text-sky-400     { color: #0369a1 !important; }
+/* green / completed / positive */
+[data-mode="light"] .text-emerald-400 { color: #047857 !important; }
+/* red / failed / negative */
+[data-mode="light"] .text-red-400     { color: #b91c1c !important; }
+/* amber / no_answer / mixed */
+[data-mode="light"] .text-amber-400   { color: #92400e !important; }
+/* orange / busy */
+[data-mode="light"] .text-orange-400  { color: #c2410c !important; }
+/* purple / voicemail */
+[data-mode="light"] .text-purple-400  { color: #6d28d9 !important; }
+/* slate / pending / neutral */
+[data-mode="light"] .text-slate-400   { color: #334155 !important; }
+
 /* ── Scrollbar ── */
 [data-mode="light"] ::-webkit-scrollbar-thumb       { background: #cbd5e1; }
 [data-mode="light"] ::-webkit-scrollbar-thumb:hover  { background: #94a3b8; }
