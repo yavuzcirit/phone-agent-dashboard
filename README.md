@@ -38,10 +38,29 @@ A full-stack Voice AI dashboard for Call Bank, built on top of the Luron AI plat
 
 ---
 
-## Quick start (Docker)
+## Run locally
+
+> **Requirement:** [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running.
+
+### 1 — Clone and configure
 
 ```bash
+git clone https://github.com/yavuzcirit/phone-agent-dashboard.git
+cd phone-agent-dashboard
+
+# Create your env file from the example
 cp .env.example .env
+```
+
+Open `.env` and fill in your `LURON_API_KEY`.
+
+---
+
+### 2 — Start everything with Docker
+
+This single command builds and starts the **backend (FastAPI)**, **frontend (Next.js)**, and the **SQLite database** (auto-created on first boot):
+
+```bash
 docker-compose up --build
 ```
 
@@ -49,84 +68,29 @@ docker-compose up --build
 |---|---|
 | Frontend | http://localhost:3000 |
 | Backend API | http://localhost:8000 |
-| Swagger docs | http://localhost:8000/docs |
+| Swagger / API docs | http://localhost:8000/docs |
 
 ---
 
-## Run locally (no Docker)
-
-> **Requirement:** Python 3.12 (`python3.12 --version`) and Node.js 18+.
-> Install Python 3.12 via Homebrew if missing: `brew install python@3.12`
-
-### Step 1 — Clone & configure environment
+### 3 — Useful Docker commands
 
 ```bash
-git clone https://github.com/yavuzcirit/phone-agent-dashboard.git
-cd phone-agent-dashboard
+# Follow live logs from all services
+docker-compose logs -f
 
-# Copy root env (used by backend)
-cp .env.example .env
+# Backend logs only
+docker-compose logs -f backend
+
+# Stop and remove containers
+docker-compose down
+
+# Rebuild after code changes
+docker-compose up --build
+
+# Open a shell inside the running backend container
+docker-compose exec backend bash
 ```
 
-Edit `.env` and set your `LURON_API_KEY`.
-
----
-
-### Step 2 — Backend (FastAPI + SQLite DB)
-
-The SQLite database (`backend/data/callbank.db`) is **created automatically** on first startup — no migration step needed.
-
-```bash
-cd backend
-
-# Create a Python 3.12 virtual environment
-python3.12 -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Copy backend env file
-cp ../.env .env
-
-# Start the API server (DB auto-initialises on startup)
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --log-level debug
-```
-
-Verify it's running:
-
-```bash
-curl http://localhost:8000/health
-# → {"status":"ok"}
-```
-
-Swagger UI: **http://localhost:8000/docs**
-
----
-
-### Step 3 — Frontend (Next.js)
-
-Open a **new terminal**:
-
-```bash
-cd frontend
-
-# Install Node dependencies (once)
-npm install
-
-# Copy frontend env
-cp .env.local.example .env.local
-
-# Start Next.js dev server with hot reload
-npm run dev
-```
-
-Open **http://localhost:3000** — redirects to `/dashboard` automatically.
-
-> `NEXT_PUBLIC_API_URL` and `API_URL` in `.env.local` both default to `http://localhost:8000/api`.
-> Change them only if you run the backend on a different port.
-
----
 
 ## Local debug setup
 
