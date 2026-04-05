@@ -28,25 +28,23 @@ A full-stack Voice AI dashboard for Call Bank, built on top of the Luron AI plat
 
 ```mermaid
 flowchart TD
-    subgraph Browser["🌐 Browser — Next.js 15 App Router"]
+    subgraph Browser["Browser — Next.js 15 App Router"]
         UI["Dashboard · Console · Knowledge Base · Analytics"]
     end
 
     Browser -- HTTP --> Backend
 
-    subgraph Backend["⚙️ FastAPI Backend — Python 3.12"]
-        direction TB
-        Routes["/api/calls · /api/mock-data · /api/knowledge-base · /api/integrations"]
+    subgraph Backend["FastAPI Backend — Python 3.12"]
         Luron["Luron AI Client"]
         RAG["RAG / ChromaDB"]
-        FX["Weather & FX Services"]
+        FX["Weather and FX Services"]
     end
 
-    Luron --> LuronAPI["Luron API\n(onrender.com)"]
-    RAG --> SQLite["SQLite\n(call history)"]
-    RAG --> Chroma["ChromaDB\n(vector store)"]
-    FX --> OpenMeteo["Open-Meteo\n(weather, free)"]
-    FX --> Frankfurter["Frankfurter.dev\n(FX rates, free)"]
+    Luron --> LuronAPI["Luron API\nonrender.com"]
+    RAG --> SQLite["SQLite\ncall history"]
+    RAG --> Chroma["ChromaDB\nvector store"]
+    FX --> OpenMeteo["Open-Meteo\nweather, free"]
+    FX --> Frankfurter["Frankfurter.dev\nFX rates, free"]
 
     style Browser fill:#1e293b,stroke:#818cf8,color:#e2e8f0
     style Backend fill:#0f172a,stroke:#34d399,color:#e2e8f0
