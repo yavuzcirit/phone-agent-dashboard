@@ -26,24 +26,30 @@ A full-stack Voice AI dashboard for Call Bank, built on top of the Luron AI plat
 
 ## Architecture
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                     Browser (Next.js 15)                │
-│  Dashboard (SSR) │ Console │ Knowledge Base │ Analytics  │
-└────────────────────────────┬────────────────────────────┘
-                             │ HTTP
-┌────────────────────────────▼────────────────────────────┐
-│                   FastAPI Backend (Python 3.12)          │
-│  /api/calls  /api/mock-data  /api/knowledge-base        │
-│  /api/integrations                                      │
-│                                                         │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │
-│  │ Luron Client │  │  RAG/ChromaDB│  │ Weather / FX │  │
-│  └──────┬───────┘  └──────────────┘  └──────────────┘  │
-└─────────┼───────────────────────────────────────────────┘
-          │                │                   │
-   Luron API (onrender)  SQLite          Open-Meteo /
-                        (history)        Frankfurter.dev
+```mermaid
+flowchart TD
+    subgraph Browser["🌐 Browser — Next.js 15 App Router"]
+        UI["Dashboard · Console · Knowledge Base · Analytics"]
+    end
+
+    Browser -- HTTP --> Backend
+
+    subgraph Backend["⚙️ FastAPI Backend — Python 3.12"]
+        direction TB
+        Routes["/api/calls · /api/mock-data · /api/knowledge-base · /api/integrations"]
+        Luron["Luron AI Client"]
+        RAG["RAG / ChromaDB"]
+        FX["Weather & FX Services"]
+    end
+
+    Luron --> LuronAPI["Luron API\n(onrender.com)"]
+    RAG --> SQLite["SQLite\n(call history)"]
+    RAG --> Chroma["ChromaDB\n(vector store)"]
+    FX --> OpenMeteo["Open-Meteo\n(weather, free)"]
+    FX --> Frankfurter["Frankfurter.dev\n(FX rates, free)"]
+
+    style Browser fill:#1e293b,stroke:#818cf8,color:#e2e8f0
+    style Backend fill:#0f172a,stroke:#34d399,color:#e2e8f0
 ```
 
 ### Stack
