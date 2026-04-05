@@ -52,6 +52,18 @@
   border-color: #e2e8f0 !important;
 }
 
+/* ── Mobile top mini-header ── */
+[data-mode="light"] .fixed.top-0.bg-slate-900 {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+/* ── Mobile bottom tab bar ── */
+[data-mode="light"] .fixed.bottom-0.bg-slate-900,
+[data-mode="light"] nav .border-t.border-slate-700\/60.bg-slate-900 {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
 /* ── Main backgrounds ── */
 [data-mode="light"] .bg-slate-950 { background-color: #f1f5f9 !important; }
 [data-mode="light"] .bg-slate-900 { background-color: #ffffff !important; }
