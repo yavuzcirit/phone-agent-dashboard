@@ -6,7 +6,7 @@ A full-stack Voice AI dashboard for Call Bank, built on top of the Luron AI plat
 
 ## Screenshots
 
-### Desktop — Dark Mode
+### Mobile — Bottom Tab Navigation
 
 | Dashboard | Call Console |
 |:-:|:-:|
@@ -16,7 +16,7 @@ A full-stack Voice AI dashboard for Call Bank, built on top of the Luron AI plat
 
 ![Dashboard light](docs/screenshots/dashboard-light.png)
 
-### Mobile — Bottom Tab Navigation
+### Desktop — Dark Mode
 
 | Light Mode | Dark Mode |
 |:-:|:-:|
