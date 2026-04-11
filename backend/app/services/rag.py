@@ -21,13 +21,7 @@ def _get_chroma_collection() -> chromadb.Collection:
     Path(settings.chroma_persist_dir).mkdir(parents=True, exist_ok=True)
     client = chromadb.PersistentClient(path=settings.chroma_persist_dir)
 
-    if settings.openai_api_key:
-        embed_fn = embedding_functions.OpenAIEmbeddingFunction(
-            api_key=settings.openai_api_key,
-            model_name="text-embedding-3-small",
-        )
-    else:
-        embed_fn = embedding_functions.DefaultEmbeddingFunction()
+    embed_fn = embedding_functions.DefaultEmbeddingFunction()
 
     return client.get_or_create_collection(
         name=COLLECTION_NAME,

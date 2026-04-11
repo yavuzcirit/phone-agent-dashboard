@@ -24,7 +24,7 @@ export interface VoiceInfo {
   style: "professional" | "friendly" | "authoritative" | "calm" | "energetic" | "warm" | "expressive";
   description: string;
   twilio_voice: string;
-  openai_voice: string;
+  piper_voice: string;
 }
 
 export interface LanguageInfo {

@@ -87,7 +87,7 @@ export function Sidebar() {
         <ThemeSelector />
 
         <div className="border-t border-slate-700/60 px-5 py-3">
-          <p className="text-[11px] text-slate-600">Powered by OpenAI &amp; Twilio</p>
+          <p className="text-[11px] text-slate-600">Powered by Ollama &amp; Twilio</p>
         </div>
       </aside>
 
