@@ -5,7 +5,7 @@ import type { CallRecord } from "@/types";
 
 export const metadata: Metadata = {
   title: "Call Console",
-  description: "Configure and trigger outbound AI calls via the Luron calling API.",
+  description: "Configure and trigger outbound AI calls via the self-hosted voice engine.",
 };
 
 async function getCallHistory(): Promise<CallRecord[]> {

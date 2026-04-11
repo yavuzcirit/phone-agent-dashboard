@@ -5,11 +5,13 @@ services:
     build:
       context: ./backend
     environment:
-      - LURON_API_KEY=${LURON_API_KEY}
-      - LURON_BASE_URL=${LURON_BASE_URL:-https://luron-backend.onrender.com/api/v1}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID:-}
+      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN:-}
+      - TWILIO_PHONE_NUMBER=${TWILIO_PHONE_NUMBER:-}
+      - SERVER_BASE_URL=${SERVER_BASE_URL:-http://localhost:8000}
       - DATABASE_URL=sqlite+aiosqlite:///./data/callbank.db
       - CHROMA_PERSIST_DIR=./data/chroma
-      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - CORS_ORIGINS=["http://localhost:3000","http://frontend:3000"]
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
     volumes:

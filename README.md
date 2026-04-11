@@ -1,6 +1,6 @@
 # CallBank — Voice AI Integration Suite
 
-A full-stack Voice AI dashboard for Call Bank, built on top of the Luron AI platform. Real-time call analytics, outbound calling console with context enrichment, and a document-powered knowledge base.
+A full-stack Voice AI dashboard for Call Bank with a self-hosted voice engine. Real-time call analytics, outbound calling console with context enrichment, and a document-powered knowledge base — powered by OpenAI TTS and Twilio.
 
 ---
 
@@ -35,12 +35,13 @@ flowchart TD
     Browser -- HTTP --> Backend
 
     subgraph Backend["FastAPI Backend — Python 3.12"]
-        Luron["Luron AI Client"]
+        VoiceEngine["Voice Engine\nOpenAI TTS + Twilio"]
         RAG["RAG / ChromaDB"]
         FX["Weather and FX Services"]
     end
 
-    Luron --> LuronAPI["Luron API\nonrender.com"]
+    VoiceEngine --> OpenAITTS["OpenAI TTS\ntts-1-hd"]
+    VoiceEngine --> Twilio["Twilio\noutbound calls"]
     RAG --> SQLite["SQLite\ncall history"]
     RAG --> Chroma["ChromaDB\nvector store"]
     FX --> OpenMeteo["Open-Meteo\nweather, free"]
@@ -76,7 +77,7 @@ cd phone-agent-dashboard
 cp .env.example .env
 ```
 
-Open `.env` and fill in your `LURON_API_KEY`.
+Open `.env` and fill in your credentials (see [Environment variables](#environment-variables) below).
 
 ---
 
@@ -183,10 +184,14 @@ Open **http://localhost:3000** — the root redirects to `/dashboard`.
 
 | Variable | Required | Default | Description |
 |---|---|---|---|
-| `LURON_API_KEY` | Yes | — | Luron AI API key |
-| `LURON_BASE_URL` | No | `https://luron-backend.onrender.com/api/v1` | Override for staging |
-| `OPENAI_API_KEY` | No | `""` | Enables OpenAI embeddings; falls back to ONNX when empty |
+| `OPENAI_API_KEY` | Recommended | `""` | Powers TTS audio preview (tts-1-hd) and the AI conversation engine (GPT-4o-mini); also enables richer knowledge-base embeddings |
+| `TWILIO_ACCOUNT_SID` | For real calls | `""` | Twilio account SID — get from console.twilio.com |
+| `TWILIO_AUTH_TOKEN` | For real calls | `""` | Twilio auth token |
+| `TWILIO_PHONE_NUMBER` | For real calls | `""` | Your Twilio number in E.164 format, e.g. `+14155552671` |
+| `SERVER_BASE_URL` | For real calls | `http://localhost:8000` | Public URL Twilio will POST webhooks to (use ngrok in dev) |
 | `LOG_LEVEL` | No | `INFO` | `DEBUG` / `INFO` / `WARNING` |
+
+> **Dev mode:** All three `TWILIO_*` vars can be left empty. Calls will run in *simulated* mode — records are saved to the DB but no phone is dialled.
 
 ---
 
@@ -295,7 +300,7 @@ print(get_settings().model_dump())
 | Dashboard shows no data | Backend not running | Start backend first on port 8000 |
 | Exchange rates return 301 | Frankfurter moved domain | Already fixed — uses `api.frankfurter.dev/v1` |
 | `422` on make-call | Phone not E.164 | Use `+` prefix, e.g. `+905551234567` |
-| `502` on make-call | Luron API unreachable or wrong key | Check `LURON_API_KEY` in `backend/.env` |
+| `502` on make-call | Twilio credentials invalid | Check `TWILIO_*` vars in `backend/.env`; or leave them empty to use simulated mode |
 | ChromaDB `Collection not found` | No documents uploaded yet | Upload a file in the Knowledge Base page |
 | Frontend `fetch failed` in build | Backend not available at build time | Normal — pages use `dynamic = "force-dynamic"` |
 
