@@ -6,10 +6,19 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
-    # ── OpenAI ────────────────────────────────────────────────────────────────
-    # Required for TTS audio preview and AI conversation engine.
-    # When absent, Twilio's built-in Polly TTS is used for in-call audio only.
-    openai_api_key: str = ""
+    # ── Ollama (self-hosted LLM) ───────────────────────────────────────────────
+    # Required for the live call conversation engine.
+    # Run locally:  ollama serve
+    # Pull model:   ollama pull llama3.2:3b
+    # In Docker:    set to http://ollama:11434
+    ollama_api_url: str = "http://localhost:11434"
+    ollama_model: str = "llama3.2:3b"
+
+    # ── Piper TTS (self-hosted, offline) ──────────────────────────────────────
+    # Directory where Piper ONNX model files are stored.
+    # Models are downloaded automatically on first use from HuggingFace.
+    # Leave empty to disable audio preview (in-call audio still works via Twilio Polly).
+    piper_models_dir: str = "./data/piper_models"
 
     # ── Twilio ────────────────────────────────────────────────────────────────
     # Required for real outbound calls.

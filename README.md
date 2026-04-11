@@ -184,7 +184,9 @@ Open **http://localhost:3000** — the root redirects to `/dashboard`.
 
 | Variable | Required | Default | Description |
 |---|---|---|---|
-| `OPENAI_API_KEY` | Recommended | `""` | Powers TTS audio preview (tts-1-hd) and the AI conversation engine (GPT-4o-mini); also enables richer knowledge-base embeddings |
+| `OLLAMA_API_URL` | Recommended | `http://localhost:11434` | Ollama server URL — powers the live call AI engine |
+| `OLLAMA_MODEL` | No | `llama3.2:3b` | Ollama model to use (`ollama pull llama3.2:3b`) |
+| `PIPER_MODELS_DIR` | No | `./data/piper_models` | Path for Piper ONNX voice models (auto-downloaded on first use) |
 | `TWILIO_ACCOUNT_SID` | For real calls | `""` | Twilio account SID — get from console.twilio.com |
 | `TWILIO_AUTH_TOKEN` | For real calls | `""` | Twilio auth token |
 | `TWILIO_PHONE_NUMBER` | For real calls | `""` | Your Twilio number in E.164 format, e.g. `+14155552671` |
@@ -192,6 +194,7 @@ Open **http://localhost:3000** — the root redirects to `/dashboard`.
 | `LOG_LEVEL` | No | `INFO` | `DEBUG` / `INFO` / `WARNING` |
 
 > **Dev mode:** All three `TWILIO_*` vars can be left empty. Calls will run in *simulated* mode — records are saved to the DB but no phone is dialled.
+> **Ollama:** Run `ollama serve` locally and `ollama pull llama3.2:3b` once before starting the backend.
 
 ---
 

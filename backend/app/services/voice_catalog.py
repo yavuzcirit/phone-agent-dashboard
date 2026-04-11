@@ -2,10 +2,15 @@
 
 Each voice maps to:
 - A Twilio/Polly voice ID for in-call TTS via TwiML  (twilio_voice)
-- An OpenAI TTS voice ID for preview synthesis       (openai_voice)
+- A Piper TTS model name for offline audio synthesis  (piper_voice)
+
+Piper models are downloaded automatically on first use from:
+  https://huggingface.co/rhasspy/piper-voices
 
 Languages covered: en-US, en-GB, en-AU, es-ES, es-US, fr-FR, de-DE,
 it-IT, pt-BR, tr-TR, ja-JP, zh-CN, ar-SA, hi-IN, nl-NL, ru-RU, ko-KR, pl-PL
+
+Note: ar-SA and hi-IN fall back to en_US-lessac-medium (no Piper model available yet).
 """
 from dataclasses import dataclass
 from typing import Literal
@@ -24,80 +29,80 @@ class VoiceInfo:
     style: Style
     description: str
     twilio_voice: str    # Amazon Polly name used in TwiML <Say> e.g. "Polly.Joanna"
-    openai_voice: str    # OpenAI TTS voice ID e.g. "nova"
+    piper_voice: str     # Piper TTS model name e.g. "en_US-lessac-medium"
 
 
 VOICE_CATALOG: list[VoiceInfo] = [
     # ── English (US) ──────────────────────────────────────────────────────────
-    VoiceInfo("aria",      "Aria",      "en-US", "English (US)",       "female", "professional",  "Clear, authoritative voice ideal for business calls",              "Polly.Joanna",   "nova"),
-    VoiceInfo("james",     "James",     "en-US", "English (US)",       "male",   "authoritative", "Deep, confident voice for formal interactions",                    "Polly.Matthew",  "onyx"),
-    VoiceInfo("sasha",     "Sasha",     "en-US", "English (US)",       "female", "friendly",      "Warm, approachable voice for customer service",                    "Polly.Salli",    "coral"),
-    VoiceInfo("max",       "Max",       "en-US", "English (US)",       "male",   "energetic",     "Upbeat, engaging voice for outbound campaigns",                    "Polly.Joey",     "alloy"),
-    VoiceInfo("kendra",    "Kendra",    "en-US", "English (US)",       "female", "calm",          "Calm, reassuring voice for support interactions",                  "Polly.Kendra",   "shimmer"),
+    VoiceInfo("aria",      "Aria",      "en-US", "English (US)",       "female", "professional",  "Clear, authoritative voice ideal for business calls",              "Polly.Joanna",   "en_US-lessac-medium"),
+    VoiceInfo("james",     "James",     "en-US", "English (US)",       "male",   "authoritative", "Deep, confident voice for formal interactions",                    "Polly.Matthew",  "en_US-ryan-medium"),
+    VoiceInfo("sasha",     "Sasha",     "en-US", "English (US)",       "female", "friendly",      "Warm, approachable voice for customer service",                    "Polly.Salli",    "en_US-amy-medium"),
+    VoiceInfo("max",       "Max",       "en-US", "English (US)",       "male",   "energetic",     "Upbeat, engaging voice for outbound campaigns",                    "Polly.Joey",     "en_US-ryan-medium"),
+    VoiceInfo("kendra",    "Kendra",    "en-US", "English (US)",       "female", "calm",          "Calm, reassuring voice for support interactions",                  "Polly.Kendra",   "en_US-kusal-medium"),
 
     # ── English (UK) ──────────────────────────────────────────────────────────
-    VoiceInfo("charlotte", "Charlotte", "en-GB", "English (UK)",       "female", "professional",  "Refined British accent, professional and articulate",              "Polly.Amy",      "shimmer"),
-    VoiceInfo("emma_gb",   "Emma",      "en-GB", "English (UK)",       "female", "warm",          "Friendly British voice, natural and warm",                         "Polly.Emma",     "coral"),
-    VoiceInfo("oliver",    "Oliver",    "en-GB", "English (UK)",       "male",   "authoritative", "Classic British voice, trustworthy and clear",                     "Polly.Brian",    "echo"),
+    VoiceInfo("charlotte", "Charlotte", "en-GB", "English (UK)",       "female", "professional",  "Refined British accent, professional and articulate",              "Polly.Amy",      "en_GB-jenny_dioco-medium"),
+    VoiceInfo("emma_gb",   "Emma",      "en-GB", "English (UK)",       "female", "warm",          "Friendly British voice, natural and warm",                         "Polly.Emma",     "en_GB-jenny_dioco-medium"),
+    VoiceInfo("oliver",    "Oliver",    "en-GB", "English (UK)",       "male",   "authoritative", "Classic British voice, trustworthy and clear",                     "Polly.Brian",    "en_GB-alan-medium"),
 
     # ── English (AU) ──────────────────────────────────────────────────────────
-    VoiceInfo("jessica",   "Jessica",   "en-AU", "English (AU)",       "female", "friendly",      "Australian accent, natural and warm",                              "Polly.Nicole",   "coral"),
-    VoiceInfo("russell",   "Russell",   "en-AU", "English (AU)",       "male",   "professional",  "Confident Australian male voice",                                  "Polly.Russell",  "echo"),
+    VoiceInfo("jessica",   "Jessica",   "en-AU", "English (AU)",       "female", "friendly",      "Australian accent, natural and warm",                              "Polly.Nicole",   "en_US-lessac-medium"),
+    VoiceInfo("russell",   "Russell",   "en-AU", "English (AU)",       "male",   "professional",  "Confident Australian male voice",                                  "Polly.Russell",  "en_US-ryan-medium"),
 
     # ── Spanish (Spain) ───────────────────────────────────────────────────────
-    VoiceInfo("elena",     "Elena",     "es-ES", "Spanish (Spain)",    "female", "professional",  "Castilian Spanish, clear and professional",                        "Polly.Conchita", "nova"),
-    VoiceInfo("pablo",     "Pablo",     "es-ES", "Spanish (Spain)",    "male",   "friendly",      "Warm Spanish voice, natural and engaging",                         "Polly.Enrique",  "echo"),
+    VoiceInfo("elena",     "Elena",     "es-ES", "Spanish (Spain)",    "female", "professional",  "Castilian Spanish, clear and professional",                        "Polly.Conchita", "es_ES-mls-medium"),
+    VoiceInfo("pablo",     "Pablo",     "es-ES", "Spanish (Spain)",    "male",   "friendly",      "Warm Spanish voice, natural and engaging",                         "Polly.Enrique",  "es_ES-mls-medium"),
 
     # ── Spanish (US / Latin America) ──────────────────────────────────────────
-    VoiceInfo("lucia",     "Lucia",     "es-US", "Spanish (US)",       "female", "energetic",     "Lively bilingual voice for US-Hispanic market",                    "Polly.Lupe",     "shimmer"),
-    VoiceInfo("miguel",    "Miguel",    "es-US", "Spanish (US)",       "male",   "professional",  "Clear Latin-American male voice",                                  "Polly.Miguel",   "onyx"),
+    VoiceInfo("lucia",     "Lucia",     "es-US", "Spanish (US)",       "female", "energetic",     "Lively bilingual voice for US-Hispanic market",                    "Polly.Lupe",     "es_US-danny-low"),
+    VoiceInfo("miguel",    "Miguel",    "es-US", "Spanish (US)",       "male",   "professional",  "Clear Latin-American male voice",                                  "Polly.Miguel",   "es_US-danny-low"),
 
     # ── French ────────────────────────────────────────────────────────────────
-    VoiceInfo("camille",   "Camille",   "fr-FR", "French (France)",    "female", "warm",          "Elegant French voice, sophisticated and warm",                     "Polly.Lea",      "nova"),
-    VoiceInfo("pierre",    "Pierre",    "fr-FR", "French (France)",    "male",   "professional",  "Authoritative French voice, classic and clear",                    "Polly.Mathieu",  "onyx"),
+    VoiceInfo("camille",   "Camille",   "fr-FR", "French (France)",    "female", "warm",          "Elegant French voice, sophisticated and warm",                     "Polly.Lea",      "fr_FR-siwis-medium"),
+    VoiceInfo("pierre",    "Pierre",    "fr-FR", "French (France)",    "male",   "professional",  "Authoritative French voice, classic and clear",                    "Polly.Mathieu",  "fr_FR-gilles-low"),
 
     # ── German ────────────────────────────────────────────────────────────────
-    VoiceInfo("hanna",     "Hanna",     "de-DE", "German",             "female", "professional",  "Crisp German voice, precise and professional",                     "Polly.Vicki",    "shimmer"),
-    VoiceInfo("hans",      "Hans",      "de-DE", "German",             "male",   "authoritative", "Reliable German voice, formal and trustworthy",                    "Polly.Hans",     "echo"),
+    VoiceInfo("hanna",     "Hanna",     "de-DE", "German",             "female", "professional",  "Crisp German voice, precise and professional",                     "Polly.Vicki",    "de_DE-kerstin-low"),
+    VoiceInfo("hans",      "Hans",      "de-DE", "German",             "male",   "authoritative", "Reliable German voice, formal and trustworthy",                    "Polly.Hans",     "de_DE-thorsten-medium"),
 
     # ── Italian ───────────────────────────────────────────────────────────────
-    VoiceInfo("sofia",     "Sofia",     "it-IT", "Italian",            "female", "warm",          "Expressive Italian voice, natural and engaging",                   "Polly.Bianca",   "coral"),
-    VoiceInfo("marco",     "Marco",     "it-IT", "Italian",            "male",   "friendly",      "Natural Italian voice for conversational calls",                   "Polly.Giorgio",  "alloy"),
+    VoiceInfo("sofia",     "Sofia",     "it-IT", "Italian",            "female", "warm",          "Expressive Italian voice, natural and engaging",                   "Polly.Bianca",   "it_IT-riccardo-x_low"),
+    VoiceInfo("marco",     "Marco",     "it-IT", "Italian",            "male",   "friendly",      "Natural Italian voice for conversational calls",                   "Polly.Giorgio",  "it_IT-riccardo-x_low"),
 
     # ── Portuguese (Brazil) ───────────────────────────────────────────────────
-    VoiceInfo("valentina", "Valentina", "pt-BR", "Portuguese (BR)",    "female", "friendly",      "Warm Brazilian Portuguese, clear and expressive",                  "Polly.Camila",   "nova"),
-    VoiceInfo("ricardo",   "Ricardo",   "pt-BR", "Portuguese (BR)",    "male",   "professional",  "Confident Brazilian voice for professional calls",                 "Polly.Ricardo",  "echo"),
+    VoiceInfo("valentina", "Valentina", "pt-BR", "Portuguese (BR)",    "female", "friendly",      "Warm Brazilian Portuguese, clear and expressive",                  "Polly.Camila",   "pt_BR-faber-medium"),
+    VoiceInfo("ricardo",   "Ricardo",   "pt-BR", "Portuguese (BR)",    "male",   "professional",  "Confident Brazilian voice for professional calls",                 "Polly.Ricardo",  "pt_BR-faber-medium"),
 
     # ── Turkish ───────────────────────────────────────────────────────────────
-    VoiceInfo("ayse",      "Ayse",      "tr-TR", "Turkish",            "female", "professional",  "Natural Turkish voice for local market calls",                     "Polly.Filiz",    "nova"),
+    VoiceInfo("ayse",      "Ayse",      "tr-TR", "Turkish",            "female", "professional",  "Natural Turkish voice for local market calls",                     "Polly.Filiz",    "tr_TR-dfki-medium"),
 
     # ── Japanese ──────────────────────────────────────────────────────────────
-    VoiceInfo("yuki",      "Yuki",      "ja-JP", "Japanese",           "female", "professional",  "Clear Japanese voice, polite and professional",                    "Polly.Mizuki",   "shimmer"),
-    VoiceInfo("kenji",     "Kenji",     "ja-JP", "Japanese",           "male",   "authoritative", "Authoritative Japanese voice for business contexts",               "Polly.Takumi",   "onyx"),
+    VoiceInfo("yuki",      "Yuki",      "ja-JP", "Japanese",           "female", "professional",  "Clear Japanese voice, polite and professional",                    "Polly.Mizuki",   "ja_JP-kenichi-medium"),
+    VoiceInfo("kenji",     "Kenji",     "ja-JP", "Japanese",           "male",   "authoritative", "Authoritative Japanese voice for business contexts",               "Polly.Takumi",   "ja_JP-kenichi-medium"),
 
     # ── Chinese (Mandarin) ────────────────────────────────────────────────────
-    VoiceInfo("xiaomei",   "Xiao Mei",  "zh-CN", "Chinese (Mandarin)", "female", "professional",  "Clear Mandarin voice for Chinese-speaking customers",              "Polly.Zhiyu",    "nova"),
+    VoiceInfo("xiaomei",   "Xiao Mei",  "zh-CN", "Chinese (Mandarin)", "female", "professional",  "Clear Mandarin voice for Chinese-speaking customers",              "Polly.Zhiyu",    "zh_CN-huayan-medium"),
 
-    # ── Arabic ────────────────────────────────────────────────────────────────
-    VoiceInfo("hana",      "Hana",      "ar-SA", "Arabic",             "female", "professional",  "Standard Arabic voice for Middle East markets",                    "Polly.Zeina",    "shimmer"),
+    # ── Arabic (fallback: no Piper model available yet) ───────────────────────
+    VoiceInfo("hana",      "Hana",      "ar-SA", "Arabic",             "female", "professional",  "Standard Arabic voice for Middle East markets",                    "Polly.Zeina",    "en_US-lessac-medium"),
 
-    # ── Hindi ─────────────────────────────────────────────────────────────────
-    VoiceInfo("priya",     "Priya",     "hi-IN", "Hindi",              "female", "friendly",      "Natural Hindi voice for India market calls",                       "Polly.Aditi",    "nova"),
+    # ── Hindi (fallback: no Piper model available yet) ────────────────────────
+    VoiceInfo("priya",     "Priya",     "hi-IN", "Hindi",              "female", "friendly",      "Natural Hindi voice for India market calls",                       "Polly.Aditi",    "en_US-lessac-medium"),
 
     # ── Dutch ─────────────────────────────────────────────────────────────────
-    VoiceInfo("lotte",     "Lotte",     "nl-NL", "Dutch",              "female", "professional",  "Clear Dutch voice for Netherlands market",                         "Polly.Lotte",    "shimmer"),
-    VoiceInfo("ruben",     "Ruben",     "nl-NL", "Dutch",              "male",   "professional",  "Clear Dutch male voice for Netherlands market",                    "Polly.Ruben",    "echo"),
+    VoiceInfo("lotte",     "Lotte",     "nl-NL", "Dutch",              "female", "professional",  "Clear Dutch voice for Netherlands market",                         "Polly.Lotte",    "nl_NL-mls-medium"),
+    VoiceInfo("ruben",     "Ruben",     "nl-NL", "Dutch",              "male",   "professional",  "Clear Dutch male voice for Netherlands market",                    "Polly.Ruben",    "nl_NL-mls-medium"),
 
     # ── Russian ───────────────────────────────────────────────────────────────
-    VoiceInfo("tatyana",   "Tatyana",   "ru-RU", "Russian",            "female", "professional",  "Clear Russian voice, natural intonation",                          "Polly.Tatyana",  "nova"),
-    VoiceInfo("maxim",     "Maxim",     "ru-RU", "Russian",            "male",   "authoritative", "Confident Russian male voice",                                     "Polly.Maxim",    "onyx"),
+    VoiceInfo("tatyana",   "Tatyana",   "ru-RU", "Russian",            "female", "professional",  "Clear Russian voice, natural intonation",                          "Polly.Tatyana",  "ru_RU-irinia-medium"),
+    VoiceInfo("maxim",     "Maxim",     "ru-RU", "Russian",            "male",   "authoritative", "Confident Russian male voice",                                     "Polly.Maxim",    "ru_RU-irinia-medium"),
 
     # ── Korean ────────────────────────────────────────────────────────────────
-    VoiceInfo("seoyeon",   "Seoyeon",   "ko-KR", "Korean",             "female", "friendly",      "Natural Korean voice for Korean-speaking customers",               "Polly.Seoyeon",  "shimmer"),
+    VoiceInfo("seoyeon",   "Seoyeon",   "ko-KR", "Korean",             "female", "friendly",      "Natural Korean voice for Korean-speaking customers",               "Polly.Seoyeon",  "ko_KR-kss-medium"),
 
     # ── Polish ────────────────────────────────────────────────────────────────
-    VoiceInfo("maja",      "Maja",      "pl-PL", "Polish",             "female", "professional",  "Clear Polish female voice, warm and professional",                 "Polly.Maja",     "nova"),
-    VoiceInfo("jacek",     "Jacek",     "pl-PL", "Polish",             "male",   "authoritative", "Authoritative Polish male voice",                                  "Polly.Jacek",    "onyx"),
+    VoiceInfo("maja",      "Maja",      "pl-PL", "Polish",             "female", "professional",  "Clear Polish female voice, warm and professional",                 "Polly.Maja",     "pl_PL-mls_6892-medium"),
+    VoiceInfo("jacek",     "Jacek",     "pl-PL", "Polish",             "male",   "authoritative", "Authoritative Polish male voice",                                  "Polly.Jacek",    "pl_PL-mls_6892-medium"),
 ]
 
 # ── Lookup helpers ────────────────────────────────────────────────────────────

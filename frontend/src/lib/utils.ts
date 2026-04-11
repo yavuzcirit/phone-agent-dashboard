@@ -37,6 +37,7 @@ const STATUS_STYLES: Record<CallStatus, string> = {
   completed: "bg-emerald-500/15 text-emerald-400 ring-emerald-500/25",
   in_progress: "bg-blue-500/15 text-blue-400 ring-blue-500/25",
   initiated: "bg-blue-500/15 text-blue-400 ring-blue-500/25",
+  simulated: "bg-slate-500/15 text-slate-400 ring-slate-500/25",
   failed: "bg-red-500/15 text-red-400 ring-red-500/25",
   no_answer: "bg-amber-500/15 text-amber-400 ring-amber-500/25",
   busy: "bg-orange-500/15 text-orange-400 ring-orange-500/25",

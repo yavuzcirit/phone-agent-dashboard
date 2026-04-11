@@ -1,11 +1,41 @@
 version: "3.9"
 
 services:
+  # ── Self-hosted LLM (Ollama) ─────────────────────────────────────────────
+  # Serves llama3.2:3b for the call conversation engine.
+  # On first start it pulls the model (~2 GB) — subsequent starts are instant.
+  # GPU acceleration is automatic if NVIDIA drivers + nvidia-container-toolkit are installed.
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    # Pull the default model on startup so the backend can use it immediately
+    entrypoint: >
+      /bin/sh -c "
+        ollama serve &
+        OLLAMA_PID=$$!;
+        sleep 8;
+        ollama pull ${OLLAMA_MODEL:-llama3.2:3b};
+        wait $$OLLAMA_PID
+      "
+
+  # ── FastAPI Backend ───────────────────────────────────────────────────────
   backend:
     build:
       context: ./backend
     environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - OLLAMA_API_URL=http://ollama:11434
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-llama3.2:3b}
+      - PIPER_MODELS_DIR=/app/data/piper_models
       - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID:-}
       - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN:-}
       - TWILIO_PHONE_NUMBER=${TWILIO_PHONE_NUMBER:-}
@@ -16,8 +46,12 @@ services:
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
     volumes:
       - backend_data:/app/data
+      - piper_models:/app/data/piper_models
     ports:
       - "8000:8000"
+    depends_on:
+      ollama:
+        condition: service_healthy
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
@@ -25,6 +59,7 @@ services:
       timeout: 10s
       retries: 3
 
+  # ── Next.js Frontend ──────────────────────────────────────────────────────
   frontend:
     build:
       context: ./frontend
@@ -42,3 +77,5 @@ services:
 
 volumes:
   backend_data:
+  ollama_data:      # Ollama model weights (~2 GB for llama3.2:3b)
+  piper_models:     # Piper ONNX models (~50–100 MB each, downloaded on demand)
