@@ -177,8 +177,7 @@ def _compute_summary(calls: list[dict]) -> dict:
 def generate_mock_calls(count: int = 50) -> dict:
     """Generate *count* realistic mock call records.
 
-    Returns the same shape previously returned by the Luron mock-calls endpoint
-    so existing frontend code is compatible.
+    Returns a shape compatible with the existing frontend mock-data consumer.
     """
     now = datetime.now(tz=timezone.utc)
     calls = [_generate_one(now) for _ in range(count)]
