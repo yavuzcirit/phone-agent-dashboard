@@ -10,11 +10,14 @@ class CallRecord(Base):
 
     id: Mapped[str] = mapped_column(String(64), primary_key=True)
     phone_number: Mapped[str] = mapped_column(String(32))
-    voice: Mapped[str] = mapped_column(String(32))
+    voice: Mapped[str] = mapped_column(String(64))
+    language_code: Mapped[str] = mapped_column(String(16), default="en-US")
     prompt: Mapped[str] = mapped_column(Text)
     welcome_message: Mapped[str] = mapped_column(Text)
     status: Mapped[str] = mapped_column(String(32), default="pending")
+    twilio_call_sid: Mapped[str | None] = mapped_column(String(64), nullable=True)
     raw_response: Mapped[str | None] = mapped_column(Text, nullable=True)
+    conversation_history: Mapped[str | None] = mapped_column(Text, nullable=True)
     error_message: Mapped[str | None] = mapped_column(String(512), nullable=True)
     cost_credits: Mapped[float | None] = mapped_column(Float, nullable=True)
     created_at: Mapped[datetime] = mapped_column(

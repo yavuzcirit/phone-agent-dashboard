@@ -7,13 +7,15 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import get_settings
 from app.db.session import get_db
 from app.models.call import CallRecord
 from app.schemas.call import CallRecordOut, MakeCallRequest, MakeCallResponse
 from app.services import exchange_rate as exchange_rate_svc
 from app.services import weather as weather_svc
-from app.services.luron import get_luron_client
 from app.services.rag import query_knowledge_base
+from app.services.telephony_service import get_telephony_provider
+from app.services.voice_catalog import get_voice
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/calls", tags=["calls"])
@@ -55,11 +57,17 @@ async def _build_prompt(request: MakeCallRequest) -> str:
 async def make_call(request: MakeCallRequest, db: AsyncSession = Depends(get_db)):
     enriched_prompt = await _build_prompt(request)
     record_id = str(uuid.uuid4())
+    settings = get_settings()
+
+    # Resolve voice metadata
+    voice_info = get_voice(request.voice)
+    language_code = voice_info.language_code if voice_info else request.language_code
 
     record = CallRecord(
         id=record_id,
         phone_number=request.phone_number,
         voice=request.voice,
+        language_code=language_code,
         prompt=enriched_prompt,
         welcome_message=request.welcome_message,
         status="pending",
@@ -68,25 +76,30 @@ async def make_call(request: MakeCallRequest, db: AsyncSession = Depends(get_db)
     db.add(record)
     await db.commit()
 
-    client = get_luron_client()
+    # Build Twilio webhook URLs
+    base = settings.server_base_url.rstrip("/")
+    answer_url = f"{base}/api/calls/{record_id}/answer"
+    status_url = f"{base}/api/calls/{record_id}/status"
+
+    telephony = get_telephony_provider()
     try:
-        luron_resp = await client.make_call(
-            voice=request.voice,
-            prompt=enriched_prompt,
-            welcome_message=request.welcome_message,
+        call_resp = await telephony.initiate_call(
             phone_number=request.phone_number,
+            answer_webhook_url=answer_url,
+            status_callback_url=status_url,
         )
         record.status = "initiated"
-        record.raw_response = json.dumps(luron_resp)
-        record.completed_at = datetime.utcnow()
+        record.twilio_call_sid = call_resp.get("call_sid")
+        record.raw_response = json.dumps(call_resp)
+        record.completed_at = datetime.utcnow() if call_resp.get("status") == "simulated" else None
         await db.commit()
         return MakeCallResponse(
             record_id=record_id,
-            status="initiated",
-            luron_response=luron_resp,
+            status=call_resp.get("status", "initiated"),
+            call_response=call_resp,
         )
     except Exception as exc:
-        logger.exception("Luron call failed for record %s", record_id)
+        logger.exception("Call initiation failed for record %s", record_id)
         record.status = "failed"
         record.error_message = str(exc)[:512]
         await db.commit()

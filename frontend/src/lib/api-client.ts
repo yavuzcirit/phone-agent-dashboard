@@ -2,9 +2,11 @@ import type {
   CallRecord,
   IntegrationContext,
   KnowledgeDocument,
+  LanguageInfo,
   MakeCallPayload,
   MakeCallResponse,
   MockCallsResponse,
+  VoiceInfo,
 } from "@/types";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api";
@@ -28,6 +30,14 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const api = {
+  // ── Voice catalog ──────────────────────────────────────────────────────────
+  getVoices: (language?: string): Promise<VoiceInfo[]> =>
+    request(`/voices${language ? `?language=${encodeURIComponent(language)}` : ""}`),
+
+  getLanguages: (): Promise<LanguageInfo[]> =>
+    request("/voices/languages"),
+
+  // ── Calls ──────────────────────────────────────────────────────────────────
   getMockCalls: (count = 100): Promise<MockCallsResponse> =>
     request(`/mock-data?count=${count}`),
 
@@ -42,6 +52,7 @@ export const api = {
   deleteCall: (id: string): Promise<void> =>
     request(`/calls/${id}`, { method: "DELETE" }),
 
+  // ── Knowledge base ────────────────────────────────────────────────────────
   listDocuments: (): Promise<KnowledgeDocument[]> => request("/knowledge-base"),
 
   uploadDocument: (file: File): Promise<KnowledgeDocument> => {
@@ -66,6 +77,7 @@ export const api = {
       body: JSON.stringify({ query, top_k }),
     }),
 
+  // ── Integrations ──────────────────────────────────────────────────────────
   getWeather: (city = "Istanbul"): Promise<IntegrationContext> =>
     request(`/integrations/weather?city=${encodeURIComponent(city)}`),
 

@@ -6,11 +6,32 @@ export type CallStatus =
   | "failed"
   | "in_progress"
   | "pending"
-  | "initiated";
+  | "initiated"
+  | "simulated";
 
 export type Sentiment = "positive" | "neutral" | "negative" | "mixed";
 export type Direction = "inbound" | "outbound";
-export type Voice = "burcin" | "callie";
+
+// Voice is now a free-form string ID from the voice catalog (e.g. "aria", "camille")
+export type VoiceId = string;
+
+export interface VoiceInfo {
+  id: string;
+  name: string;
+  language_code: string;   // BCP-47 e.g. "en-US"
+  language_name: string;
+  gender: "female" | "male" | "neutral";
+  style: "professional" | "friendly" | "authoritative" | "calm" | "energetic" | "warm" | "expressive";
+  description: string;
+  twilio_voice: string;
+  openai_voice: string;
+}
+
+export interface LanguageInfo {
+  code: string;        // BCP-47 e.g. "en-US"
+  name: string;        // e.g. "English (US)"
+  voice_count: number;
+}
 
 export interface MockCall {
   id: string;
@@ -27,7 +48,8 @@ export interface MockCall {
   topic: string;
   outcome: string | null;
   agent_name: string;
-  voice_used: Voice;
+  voice_used: VoiceId;
+  voice_language?: string;
   transcript_preview: string;
   recording_url: string;
   tags: string[];
@@ -35,7 +57,7 @@ export interface MockCall {
 }
 
 export interface MockCallSummary {
-  by_status: Record<CallStatus, number>;
+  by_status: Record<string, number>;
   by_sentiment: Record<Sentiment, number>;
   by_direction: Record<Direction, number>;
   avg_duration_seconds: number;
@@ -55,10 +77,12 @@ export interface MockCallsResponse {
 export interface CallRecord {
   id: string;
   phone_number: string;
-  voice: Voice;
+  voice: VoiceId;
+  language_code: string;
   prompt: string;
   welcome_message: string;
   status: CallStatus;
+  twilio_call_sid: string | null;
   raw_response: string | null;
   error_message: string | null;
   cost_credits: number | null;
@@ -67,7 +91,8 @@ export interface CallRecord {
 }
 
 export interface MakeCallPayload {
-  voice: Voice;
+  voice: VoiceId;
+  language_code: string;
   prompt: string;
   welcome_message: string;
   phone_number: string;
@@ -80,7 +105,7 @@ export interface MakeCallPayload {
 export interface MakeCallResponse {
   record_id: string;
   status: string;
-  luron_response: unknown;
+  call_response: unknown;
 }
 
 export interface KnowledgeDocument {
